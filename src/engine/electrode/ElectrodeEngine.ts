@@ -3,13 +3,7 @@
 
 import { ELECTRODE_CONSUMPTION_PARAMS } from './electrode.profiles';
 import { ELECTRODE_PROFILES } from '../../app/constants';
-import type { ElectrodeState, ArcState, Partial } from '../../app/store/types';
-
-/**
- * Electrode length when new (mm) — standard 3.2mm diameter SMAW electrode.
- * 350mm is the conventional starting length before striking.
- */
-const INITIAL_LENGTH = 350;
+import type { ElectrodeState, ArcState } from '../../app/store/types';
 
 /**
  * ElectrodeEngine — models electrode consumption, temperature, and sticking mechanic.

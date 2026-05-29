@@ -129,8 +129,11 @@ describe('Interface structures', () => {
   it('FrameResult has correct shape', () => {
     const f: FrameResult = {
       electrode: {},
-      arc: {},
-      input: {},
+      arc: { arcLength: 0, voltage: 0, stability: 0, isActive: false },
+      input: {
+        rawArcLength: 0, rawWorkAngle: 0, rawDragAngle: 0, rawPositionX: 0, rawPositionZ: 0,
+        arcLength: 0, workAngle: 0, dragAngle: 0, positionX: 0, positionZ: 0, travelSpeed: 0,
+      },
       newWeldPoint: null,
       spatterBurst: false,
     };

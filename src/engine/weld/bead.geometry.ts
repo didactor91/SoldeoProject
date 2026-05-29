@@ -2,7 +2,6 @@
 // Pure TypeScript — zero allocations, no framework imports, explicit return types
 
 import { gaussian } from '../scoring/gaussian.utils';
-import { ELECTRODE_PROFILES } from '../../app/constants';
 import type { ElectrodeProfile } from '../arc/arc.formulas';
 
 /** Bead stamp geometry output */

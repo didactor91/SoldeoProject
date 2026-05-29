@@ -5,7 +5,7 @@
 import { gaussian } from './gaussian.utils';
 import { detectDefect } from '../weld/defect.detector';
 import { ELECTRODE_PROFILES } from '../../app/constants';
-import type { InputState, ArcState, DefectType } from '../../app/store/types';
+import type { InputState, ArcState, ArcResult, DefectType } from '../../app/store/types';
 
 /**
  * Scoring result — instantaneous weld quality score per frame.
@@ -38,13 +38,13 @@ export class ScoringEngine {
    * Zero allocations — no object creation in hot path.
    *
    * @param input     — current input state (arcLength, travelSpeed, workAngle, dragAngle)
-   * @param arcResult — partial arc state from ArcEngine (arcLength)
+   * @param arcResult — arc result from ArcEngine (arcLength, voltage, stability, isActive)
    * @param arc       — full arc state (amperage)
    * @returns ScoreResult with Q, dominantDefect, isSpatter
    */
   score(
     input: InputState,
-    arcResult: { arcLength: number },
+    arcResult: ArcResult,
     arc: ArcState,
   ): ScoreResult {
     const profile = ELECTRODE_PROFILES.E6013;

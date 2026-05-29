@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { WeldEngine } from './WeldEngine';
 import { ELECTRODE_PROFILES } from '../../app/constants';
-import type { InputState, ArcState } from '../../app/store/types';
+import type { InputState, ArcState, ArcResult } from '../../app/store/types';
 
 const profile = ELECTRODE_PROFILES.E6013;
 
@@ -34,13 +34,23 @@ function makeArc(overrides: Partial<ArcState> = {}): ArcState {
   };
 }
 
+function makeArcResult(overrides: Partial<ArcResult> = {}): ArcResult {
+  return {
+    arcLength: profile.L_optimal,
+    voltage: 28,
+    stability: 1.0,
+    isActive: true,
+    ...overrides,
+  };
+}
+
 describe('WeldEngine', () => {
   const engine = new WeldEngine();
 
   describe('computeStamp() — geometry', () => {
     it('returns bead geometry within physical bounds at optimal parameters', () => {
       const input = makeInput();
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const result = engine.computeStamp(input, arcResult, arc);
       expect(result.width).toBeGreaterThanOrEqual(1);
@@ -54,7 +64,7 @@ describe('WeldEngine', () => {
     it('width decreases at high travel speed', () => {
       const input1 = makeInput({ travelSpeed: profile.v_optimal });
       const input2 = makeInput({ travelSpeed: (profile.v_optimal) * 2 });
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const r1 = engine.computeStamp(input1, arcResult, arc);
       const r2 = engine.computeStamp(input2, arcResult, arc);
@@ -65,8 +75,8 @@ describe('WeldEngine', () => {
       const input1 = makeInput({ arcLength: profile.L_optimal });
       const input2 = makeInput({ arcLength: profile.L_optimal * 2 });
       const arc = makeArc();
-      const r1 = engine.computeStamp(input1, { arcLength: profile.L_optimal }, arc);
-      const r2 = engine.computeStamp(input2, { arcLength: profile.L_optimal * 2 }, arc);
+      const r1 = engine.computeStamp(input1, makeArcResult({ arcLength: profile.L_optimal }), arc);
+      const r2 = engine.computeStamp(input2, makeArcResult({ arcLength: profile.L_optimal * 2 }), arc);
       expect(r2.penetration).toBeLessThan(r1.penetration);
     });
   });
@@ -74,7 +84,7 @@ describe('WeldEngine', () => {
   describe('computeStamp() — defect', () => {
     it('returns "none" defect at optimal parameters', () => {
       const input = makeInput();
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const result = engine.computeStamp(input, arcResult, arc);
       expect(result.defect).toBe('none');
@@ -83,14 +93,14 @@ describe('WeldEngine', () => {
     it('returns "undercut" when amperage too high and speed too fast', () => {
       const input = makeInput({ travelSpeed: (profile.v_optimal) * 1.3 });
       const arc = makeArc({ amperage: profile.I_optimal * 1.4 });
-      const result = engine.computeStamp(input, { arcLength: profile.L_optimal }, arc);
+      const result = engine.computeStamp(input, makeArcResult({ arcLength: profile.L_optimal }), arc);
       expect(result.defect).toBe('undercut');
     });
 
     it('returns "spatter" when arc is too short', () => {
       const input = makeInput({ arcLength: profile.L_optimal * 0.3 });
       const arc = makeArc();
-      const result = engine.computeStamp(input, { arcLength: profile.L_optimal * 0.3 }, arc);
+      const result = engine.computeStamp(input, makeArcResult({ arcLength: profile.L_optimal * 0.3 }), arc);
       expect(result.defect).toBe('spatter');
     });
   });
@@ -98,7 +108,7 @@ describe('WeldEngine', () => {
   describe('computeStamp() — return shape', () => {
     it('returns BeadStampGeometry + defect', () => {
       const input = makeInput();
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const result = engine.computeStamp(input, arcResult, arc);
       expect(result).toHaveProperty('width');

@@ -4,7 +4,7 @@
 import { computeBeadWidth, computeBeadHeight, computePenetration } from './bead.geometry';
 import { detectDefect } from './defect.detector';
 import { ELECTRODE_PROFILES } from '../../app/constants';
-import type { InputState, ArcState, DefectType } from '../../app/store/types';
+import type { InputState, ArcState, ArcResult, DefectType } from '../../app/store/types';
 
 /** Alias for electrode profile */
 type ElectrodeProfile = typeof ELECTRODE_PROFILES.E6013;
@@ -28,13 +28,13 @@ export class WeldEngine {
    * Computes bead stamp geometry and detects defect for current frame.
    *
    * @param input      current input state (travelSpeed, arcLength from drift)
-   * @param arcResult  partial arc state from ArcEngine (arcLength)
+   * @param arcResult  arc result from ArcEngine (arcLength, voltage, stability, isActive)
    * @param arc        full arc state (amperage for defect detection)
    * @returns WeldStampResult with geometry dimensions and defect type
    */
   computeStamp(
     input: InputState,
-    arcResult: { arcLength: number },
+    arcResult: ArcResult,
     arc: ArcState,
   ): WeldStampResult {
     const profile: ElectrodeProfile = ELECTRODE_PROFILES.E6013;

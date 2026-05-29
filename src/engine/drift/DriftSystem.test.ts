@@ -88,6 +88,8 @@ describe('DriftSystem', () => {
       const profDev = Math.abs(r2.arcLength - 3.2);
       // Note: professional may or may not have larger drift in a single frame
       // but over many frames it should accumulate more
+      expect(schoolDev).toBeGreaterThanOrEqual(0);
+      expect(profDev).toBeGreaterThanOrEqual(0);
       expect(typeof r1.arcLength).toBe('number');
       expect(typeof r2.arcLength).toBe('number');
     });
