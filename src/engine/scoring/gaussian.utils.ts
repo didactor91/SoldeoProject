@@ -1,47 +1,38 @@
-// src/engine/scoring/gaussian.utils.ts — Gaussian scoring factor helpers
+// src/engine/scoring/gaussian.utils.ts — Phase 0 foundation: gaussian(), gaussianProduct()
+// Pure TypeScript — zero allocations, explicit return types, no any
 
 /**
- * Gaussian (normal) distribution probability density function.
- * Used across the physics engine for stability, quality scoring, and bead geometry.
+ * Gaussian exponential factor — returns exp(-0.5 * ((x - μ) / σ)²).
+ * Peaks at 1.0 when x = μ. Used for stability scoring where we need
+ * normalized factors in [0, 1] rather than probability densities.
  *
- * Formula: gaussian(x, μ, σ) = exp(-0.5 · ((x-μ)/σ)²)
- *
- * Usage in simulation:
- * - ArcEngine: stability factor from arc length and amperage (RFC-002 §5.2)
- * - ScoringEngine: per-parameter quality factors (RFC-002 §5.5)
- * - WeldEngine: bead width/penetration gaussian modifiers (SDD-001 §2.2.3)
- *
- * Pure functions: same inputs → same outputs. Zero allocations.
- */
-
-/**
- * Gaussian probability density at x, centered at mu with standard deviation sigma.
- * Returns value in (0, 1].
- *
- * @param x     — observation value
- * @param mu    — mean (optimal value)
- * @param sigma — standard deviation (tolerance bandwidth)
+ * @param x     value to evaluate
+ * @param mu    mean (center) of distribution
+ * @param sigma standard deviation (spread)
+ * @returns exponential factor — range (0, 1], peak is 1 at x = mu
  */
 export function gaussian(x: number, mu: number, sigma: number): number {
   if (sigma === 0) {
-    return x === mu ? 1.0 : 0.0;
+    return x === mu ? 1 : 0;
   }
-  const d = (x - mu) / sigma;
-  return Math.exp(-0.5 * d * d);
+  const d = x - mu;
+  const s = sigma;
+  return Math.exp(-0.5 * (d * d) / (s * s));
 }
 
 /**
- * Multiplies multiple independent gaussian factors into a combined score.
- * Equivalent to: gaussian1 * gaussian2 * ... * gaussianN
- * Returns value in (0, 1].
+ * Product of multiple Gaussian factors.
+ * Used for multi-dimensional stability scoring where each dimension is independent.
  *
- * Used by ScoringEngine.score() to combine S_distance, S_speed,
- * S_workAngle, S_dragAngle, S_amperage into single Q factor.
+ * @param factors array of { x, mu, sigma } tuples
+ * @returns product of all gaussian(x, mu, sigma) values — range [0, 1]
  */
-export function gaussianProduct(...factors: number[]): number {
-  let result = 1.0;
-  for (let i = 0; i < factors.length; i++) {
-    result *= factors[i];
+export function gaussianProduct(
+  ...factors: Array<{ x: number; mu: number; sigma: number }>
+): number {
+  let result = 1;
+  for (const { x, mu, sigma } of factors) {
+    result *= gaussian(x, mu, sigma);
   }
   return result;
 }
