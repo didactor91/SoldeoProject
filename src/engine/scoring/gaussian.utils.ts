@@ -21,18 +21,17 @@ export function gaussian(x: number, mu: number, sigma: number): number {
 }
 
 /**
- * Product of multiple Gaussian factors.
- * Used for multi-dimensional stability scoring where each dimension is independent.
+ * Multiplies multiple independent gaussian factors into a combined score.
+ * Equivalent to: gaussian1 * gaussian2 * ... * gaussianN
+ * Returns value in (0, 1].
  *
- * @param factors array of { x, mu, sigma } tuples
- * @returns product of all gaussian(x, mu, sigma) values — range [0, 1]
+ * @param factors — individual gaussian factor values (each already computed)
+ * @returns product of all factors — range (0, 1]
  */
-export function gaussianProduct(
-  ...factors: Array<{ x: number; mu: number; sigma: number }>
-): number {
-  let result = 1;
-  for (const { x, mu, sigma } of factors) {
-    result *= gaussian(x, mu, sigma);
+export function gaussianProduct(...factors: number[]): number {
+  let result = 1.0;
+  for (let i = 0; i < factors.length; i++) {
+    result *= factors[i];
   }
   return result;
 }

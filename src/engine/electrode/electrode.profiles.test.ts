@@ -15,16 +15,16 @@ describe('getElectrodeProfile', () => {
 
   it('returns E7018 profile when type is E7018', () => {
     const p = getElectrodeProfile('E7018');
-    expect(p.I_optimal).toBe(110); // E7018 optimal is 110A
-    expect(p.I_min).toBe(60);
-    expect(p.I_max).toBe(160);
+    expect(p.I_optimal).toBe(115); // E7018 optimal is 115A per RFC-002 §5.6
+    expect(p.I_min).toBe(80);
+    expect(p.I_max).toBe(130);
   });
 
   it('E7018 has different I_optimal than E6013', () => {
     const e6013 = getElectrodeProfile('E6013');
     const e7018 = getElectrodeProfile('E7018');
     expect(e7018.I_optimal).not.toBe(e6013.I_optimal);
-    expect(e7018.I_optimal).toBe(110);
+    expect(e7018.I_optimal).toBe(115);
   });
 });
 

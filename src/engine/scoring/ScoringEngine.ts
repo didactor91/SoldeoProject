@@ -51,6 +51,7 @@ export class ScoringEngine {
 
     // Individual gaussian factors — per RFC-002 §5.5
     // Note: v_optimal is in mm/s per constants.ts
+    const S_distance = gaussian(arcResult.arcLength, profile.L_optimal, 1.2);
     const S_speed = gaussian(input.travelSpeed, profile.v_optimal, 1.5);
     const S_workAngle = gaussian(input.workAngle, profile.theta_work_opt, 8);
     const S_dragAngle = gaussian(input.dragAngle, profile.theta_drag_opt, 7);
