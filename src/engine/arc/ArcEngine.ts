@@ -3,7 +3,7 @@
 
 import { computeVoltage, computeStability, isArcActive } from './arc.formulas';
 import { ELECTRODE_PROFILES } from '../../app/constants';
-import type { InputState, ArcState, ElectrodeState } from '../../app/store/types';
+import type { InputState, ArcState, ElectrodeState, ArcResult } from '../../app/store/types';
 
 /**
  * ArcEngine — evaluates arc electrical state per RFC-002 §5.2.
@@ -18,13 +18,13 @@ export class ArcEngine {
    * @param input     — current input state (includes arcLength from user input + drift)
    * @param arc       — current arc state
    * @param electrode — current electrode state
-   * @returns Partial<ArcState> with voltage, stability, isActive, arcLength
+   * @returns ArcResult with voltage, stability, isActive, arcLength
    */
   evaluate(
     input: InputState,
     arc: ArcState,
     electrode: ElectrodeState,
-  ): Partial<ArcState> {
+  ): ArcResult {
     const profile = ELECTRODE_PROFILES[electrode.type as keyof typeof ELECTRODE_PROFILES];
     const L = input.arcLength;
 

@@ -1,7 +1,7 @@
 // src/engine/PhysicsEngine.test.ts — Strict TDD: PhysicsEngine orchestration tests
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PhysicsEngine } from './PhysicsEngine';
-import type { WelderStore, FrameResult } from '../app/store/types';
+import type { WelderStore } from '../app/store/types';
 
 function makeStore(overrides: Partial<WelderStore> = {}): WelderStore {
   return {

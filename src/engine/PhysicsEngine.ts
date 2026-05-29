@@ -7,13 +7,13 @@ import { WeldEngine } from './weld/WeldEngine';
 import { ElectrodeEngine } from './electrode/ElectrodeEngine';
 import { ScoringEngine } from './scoring/ScoringEngine';
 import { DriftSystem } from './drift/DriftSystem';
-import type { WelderStore, FrameResult } from '../app/store/types';
+import type { WelderStore, FrameResult, InputState } from '../app/store/types';
 
 /** Returned when arc is not active — no weld point produced */
 const NULL_FRAME_RESULT: FrameResult = {
   electrode: {},
-  arc: {},
-  input: {} as import('../app/store/types').InputState,
+  arc: { arcLength: 0, voltage: 0, stability: 0, isActive: false },
+  input: {} as InputState,
   newWeldPoint: null,
   spatterBurst: false,
 };

@@ -3,7 +3,7 @@
 import { describe, it, expect } from 'vitest';
 import { ScoringEngine } from './ScoringEngine';
 import { ELECTRODE_PROFILES } from '../../app/constants';
-import type { InputState, ArcState } from '../../app/store/types';
+import type { InputState, ArcState, ArcResult } from '../../app/store/types';
 
 const profile = ELECTRODE_PROFILES.E6013;
 
@@ -39,13 +39,23 @@ function makeArc(overrides: Partial<ArcState> = {}): ArcState {
   };
 }
 
+function makeArcResult(overrides: Partial<ArcResult> = {}): ArcResult {
+  return {
+    arcLength: profile.L_optimal,
+    voltage: 28,
+    stability: 1.0,
+    isActive: true,
+    ...overrides,
+  };
+}
+
 describe('ScoringEngine', () => {
   const engine = new ScoringEngine();
 
   describe('score() — Q at optimal parameters', () => {
     it('Q = 1.0 when all parameters exactly at optimal', () => {
       const input = makeInput();
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result.Q).toBeCloseTo(1.0, 5);
@@ -55,7 +65,7 @@ describe('ScoringEngine', () => {
   describe('score() — Q < 1 at non-optimal parameters', () => {
     it('Q < 1.0 when arc length deviates from optimal', () => {
       const input = makeInput({ arcLength: profile.L_optimal * 2 });
-      const arcResult = { arcLength: profile.L_optimal * 2 };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal * 2 });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result.Q).toBeLessThan(1.0);
@@ -64,7 +74,7 @@ describe('ScoringEngine', () => {
 
     it('Q < 1.0 when travel speed deviates from optimal', () => {
       const input = makeInput({ travelSpeed: V_OPT_mm_per_s * 2 }); // double = 5 mm/s
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result.Q).toBeLessThan(1.0);
@@ -74,7 +84,7 @@ describe('ScoringEngine', () => {
   describe('score() — Q < 0.5 condition', () => {
     it('Q < 0.5 when arc length is 2× optimal', () => {
       const input = makeInput({ arcLength: profile.L_optimal * 2 });
-      const arcResult = { arcLength: profile.L_optimal * 2 };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal * 2 });
       const arc = makeArc({ amperage: profile.I_optimal });
       const result = engine.score(input, arcResult, arc);
       expect(result.Q).toBeLessThan(0.5);
@@ -82,7 +92,7 @@ describe('ScoringEngine', () => {
 
     it('Q < 0.5 when travel speed is 2× optimal', () => {
       const input = makeInput({ travelSpeed: V_OPT_mm_per_s * 2 });
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result.Q).toBeLessThan(0.5);
@@ -98,7 +108,7 @@ describe('ScoringEngine', () => {
       ];
       for (const tc of extremeCases) {
         const input = makeInput({ arcLength: tc.arcLength, travelSpeed: tc.travelSpeed });
-        const arcResult = { arcLength: tc.arcLength };
+        const arcResult = makeArcResult({ arcLength: tc.arcLength });
         const arc = makeArc({ amperage: tc.amperage });
         const result = engine.score(input, arcResult, arc);
         expect(result.Q).toBeGreaterThanOrEqual(0);
@@ -107,7 +117,7 @@ describe('ScoringEngine', () => {
 
     it('Q is always <= 1', () => {
       const input = makeInput();
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result.Q).toBeLessThanOrEqual(1.0);
@@ -117,7 +127,7 @@ describe('ScoringEngine', () => {
   describe('score() — isSpatter', () => {
     it('isSpatter = true when arc length < L_opt*0.5', () => {
       const input = makeInput({ arcLength: profile.L_optimal * 0.3 });
-      const arcResult = { arcLength: profile.L_optimal * 0.3 };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal * 0.3 });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result.isSpatter).toBe(true);
@@ -125,7 +135,7 @@ describe('ScoringEngine', () => {
 
     it('isSpatter = true when amperage > I_opt*1.4', () => {
       const input = makeInput();
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc({ amperage: profile.I_optimal * 1.5 });
       const result = engine.score(input, arcResult, arc);
       expect(result.isSpatter).toBe(true);
@@ -133,7 +143,7 @@ describe('ScoringEngine', () => {
 
     it('isSpatter = false at optimal parameters', () => {
       const input = makeInput();
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result.isSpatter).toBe(false);
@@ -148,7 +158,7 @@ describe('ScoringEngine', () => {
         arcLength: profile.L_optimal * 0.3, // 0.96mm < 1.6mm
         travelSpeed: V_OPT_mm_per_s, // normal speed, not triggering any defect
       });
-      const arcResult = { arcLength: profile.L_optimal * 0.3 };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal * 0.3 });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result.dominantDefect).toBe('spatter');
@@ -161,7 +171,7 @@ describe('ScoringEngine', () => {
         arcLength: profile.L_optimal * 2, // 6.4mm > 5.76mm
         travelSpeed: V_OPT_mm_per_s, // normal speed ~2.5mm/s < v_opt*1.8
       });
-      const arcResult = { arcLength: profile.L_optimal * 2 };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal * 2 });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result.dominantDefect).toBe('porosity');
@@ -171,7 +181,7 @@ describe('ScoringEngine', () => {
   describe('score() — return shape', () => {
     it('returns { Q, dominantDefect, isSpatter }', () => {
       const input = makeInput();
-      const arcResult = { arcLength: profile.L_optimal };
+      const arcResult = makeArcResult({ arcLength: profile.L_optimal });
       const arc = makeArc();
       const result = engine.score(input, arcResult, arc);
       expect(result).toHaveProperty('Q');

@@ -5,7 +5,7 @@ import { gaussian } from '../scoring/gaussian.utils';
 import { ELECTRODE_PROFILES } from '../../app/constants';
 
 /** Type alias for electrode profile — derived from Phase 0 constants */
-export type ElectrodeProfile = typeof ELECTRODE_PROFILES.E6013;
+export type ElectrodeProfile = typeof ELECTRODE_PROFILES[keyof typeof ELECTRODE_PROFILES];
 
 /**
  * Dynamic arc voltage per RFC-002 §5.2.

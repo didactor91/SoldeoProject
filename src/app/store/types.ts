@@ -66,10 +66,15 @@ export interface ElectrodeState {
 export type DifficultyLevel = 'school' | 'professional' | 'expert';
 
 /**
- * Partial arc state returned by evaluate().
- * Allows incremental updates.
+ * Arc result returned by ArcEngine.evaluate().
+ * Contains computed arc state for the current frame.
  */
-export type PartialArcState = Partial<ArcState>;
+export interface ArcResult {
+  arcLength: number;
+  voltage: number;
+  stability: number;
+  isActive: boolean;
+}
 
 /**
  * Electrode type identifiers per AWS A5.1 specification.
@@ -112,7 +117,7 @@ export interface SessionState {
  */
 export interface FrameResult {
   electrode: Partial<ElectrodeState>;
-  arc: Partial<ArcState>;
+  arc: ArcResult;
   input: InputState;
   newWeldPoint: WeldPoint | null;
   spatterBurst: boolean;
