@@ -23,7 +23,7 @@ export const ELECTRODE_PROFILES = {
     L_max: 6.0,        // mm — maximum arc length (1.5× diameter)
 
     // Travel speed
-    v_optimal: 2.5,    // mm/s (= 150mm/min)
+    v_optimal: 2.5,   // mm/s (= 150mm/min)
 
     // Bead cross-section at optimal parameters
     W_base: 8,         // mm — base bead width
@@ -39,6 +39,39 @@ export const ELECTRODE_PROFILES = {
 
     // Electrode dimensions
     initialLength: 350, // mm — full rod length (standard 3.2mm E6013)
+  },
+
+  E7018: {
+    // Electrical
+    V0: 22,             // V — slightly higher than E6013
+    k: 2.8,            // V/mm
+
+    // Amperage range
+    I_optimal: 115,     // A — 3.2mm rod optimal current
+    I_min: 80,          // A
+    I_max: 130,        // A
+
+    // Arc geometry
+    L_optimal: 3.5,    // mm — requires closer arc control
+    L_max: 6.5,        // mm
+
+    // Travel speed
+    v_optimal: 2.3,   // mm/s (= 140mm/min)
+
+    // Bead cross-section
+    W_base: 8.5,        // mm
+    H_base: 2.6,        // mm
+    P_base: 2.3,        // mm
+
+    // Angle parameters
+    theta_work_opt: 90,
+    theta_drag_opt: 70,
+
+    // Electrode consumption
+    K_melt: 0.0027,   // mm/(A·s) — slightly slower than E6013
+
+    // Electrode dimensions
+    initialLength: 350,
   },
 } as const;
 
