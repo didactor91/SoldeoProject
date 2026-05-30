@@ -38,4 +38,6 @@ pnpm-debug.log*
 
 # OpenCode/Gentle AI artifacts
 .gga
-.atl/*.cache.json
+.atl/
+# Exception: keep skill registry source file
+!.atl/skill-registry.md
