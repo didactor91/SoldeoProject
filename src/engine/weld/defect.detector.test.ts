@@ -30,6 +30,7 @@ function makeArc(overrides: Partial<ArcState> = {}): ArcState {
     voltage: 28,
     amperage: profile.I_optimal,
     stability: 1.0,
+    lastSpatterBurst: false,
     ...overrides,
   };
 }

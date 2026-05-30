@@ -23,6 +23,7 @@ function getInitialArcState(): ArcState {
     voltage: 0,
     amperage: 0,
     stability: 0,
+    lastSpatterBurst: false,
   };
 }
 
@@ -123,6 +124,16 @@ export const useWelderStore = create<WelderStore>()((set, get) => {
       }));
     },
 
+    // --- Spatter action (called by SpatterSystem after consuming lastSpatterBurst) ---
+    clearSpatterBurst(): void {
+      set(state => ({
+        arc: {
+          ...state.arc,
+          lastSpatterBurst: false,
+        },
+      }));
+    },
+
     // --- Session actions ---
     setDifficulty(difficulty: DifficultyLevel): void {
       const phase = get().session.phase;
@@ -178,6 +189,7 @@ export const useWelderStore = create<WelderStore>()((set, get) => {
           arcLength: frame.arc.arcLength,
           voltage: frame.arc.voltage,
           stability: frame.arc.stability,
+          lastSpatterBurst: frame.spatterBurst,
         };
 
         // 3. Update input from engine output

@@ -10,6 +10,7 @@ function getInitialArcState(): ArcState {
     voltage: 0,
     amperage: 0,
     stability: 0,
+    lastSpatterBurst: false,
   };
 }
 
@@ -34,6 +35,7 @@ export function createArcSlice(): ArcSlice {
 
       this.arc.isActive = true;
       this.arc.arcLength = profile.L_optimal;
+      this.arc.amperage = profile.I_optimal;
       this.arc.stability = 0.5;
     },
 

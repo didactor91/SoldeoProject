@@ -80,7 +80,7 @@ describe('useWelderStore', () => {
     it('strikeArc is blocked when electrode is stuck', () => {
       // Reset arc to extinguished BEFORE testing guard (previous test left arc.isActive=true)
       useWelderStore.setState({
-        arc: { isActive: false, arcLength: 0, voltage: 0, amperage: 100, stability: 0 },
+        arc: { isActive: false, arcLength: 0, voltage: 0, amperage: 100, stability: 0, lastSpatterBurst: false },
         electrode: { isStuck: true, currentLength: 350, type: 'E6013', initialLength: 350, remainingMass: 1, temperature: 0 },
       });
       useWelderStore.getState().strikeArc();
@@ -90,7 +90,7 @@ describe('useWelderStore', () => {
     it('strikeArc is blocked when electrode is depleted', () => {
       // Reset arc to extinguished BEFORE testing guard (previous test left arc.isActive=true)
       useWelderStore.setState({
-        arc: { isActive: false, arcLength: 0, voltage: 0, amperage: 100, stability: 0 },
+        arc: { isActive: false, arcLength: 0, voltage: 0, amperage: 100, stability: 0, lastSpatterBurst: false },
         electrode: { isStuck: false, currentLength: 0, type: 'E6013', initialLength: 350, remainingMass: 0, temperature: 0 },
       });
       useWelderStore.getState().strikeArc();
@@ -111,7 +111,7 @@ describe('useWelderStore', () => {
     });
 
     it('extinguishArc preserves amperage', () => {
-      useWelderStore.setState({ arc: { isActive: true, arcLength: 3.2, voltage: 28, amperage: 100, stability: 0.8 } });
+      useWelderStore.setState({ arc: { isActive: true, arcLength: 3.2, voltage: 28, amperage: 100, stability: 0.8, lastSpatterBurst: false } });
       useWelderStore.getState().extinguishArc();
       expect(useWelderStore.getState().arc.amperage).toBe(100);
     });

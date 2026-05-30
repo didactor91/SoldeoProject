@@ -85,7 +85,7 @@ describe('PhysicsEngine', () => {
   describe('tick() — NULL_FRAME_RESULT when arc not active', () => {
     it('returns NULL_FRAME_RESULT when arc.isActive is false', () => {
       const store = makeStore({
-        arc: { isActive: false, arcLength: 3.2, voltage: 0, amperage: 100, stability: 0 },
+        arc: { isActive: false, arcLength: 3.2, voltage: 0, amperage: 100, stability: 0, lastSpatterBurst: false },
       });
       const result = engine.tick(1 / 60, store);
       expect(result.newWeldPoint).toBeNull();

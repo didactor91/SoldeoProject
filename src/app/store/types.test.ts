@@ -73,6 +73,7 @@ describe('Interface structures', () => {
       voltage: 28,
       amperage: 100,
       stability: 1.0,
+      lastSpatterBurst: false,
     };
     expect(a.isActive).toBe(true);
     expect(a.arcLength).toBe(3.2);

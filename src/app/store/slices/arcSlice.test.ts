@@ -31,6 +31,40 @@ describe('arcSlice', () => {
     });
   });
 
+  describe('strikeArc', () => {
+    it('sets arc to active with optimal arc length', () => {
+      slice.strikeArc({ isStuck: false, currentLength: 350, type: 'E6013' });
+      expect(slice.arc.isActive).toBe(true);
+      expect(slice.arc.arcLength).toBe(3.2);
+    });
+
+    it('sets amperage to I_optimal for the electrode type', () => {
+      slice.strikeArc({ isStuck: false, currentLength: 350, type: 'E6013' });
+      expect(slice.arc.amperage).toBe(100);
+    });
+
+    it('sets initial stability to 0.5', () => {
+      slice.strikeArc({ isStuck: false, currentLength: 350, type: 'E6013' });
+      expect(slice.arc.stability).toBe(0.5);
+    });
+
+    it('returns early if electrode is stuck', () => {
+      slice.strikeArc({ isStuck: true, currentLength: 350, type: 'E6013' });
+      expect(slice.arc.isActive).toBe(false);
+    });
+
+    it('returns early if electrode is depleted (currentLength <= 0)', () => {
+      slice.strikeArc({ isStuck: false, currentLength: 0, type: 'E6013' });
+      expect(slice.arc.isActive).toBe(false);
+    });
+
+    it('uses E6013 profile when type is unknown', () => {
+      slice.strikeArc({ isStuck: false, currentLength: 350, type: 'E9999' as any });
+      expect(slice.arc.arcLength).toBe(3.2);
+      expect(slice.arc.amperage).toBe(100);
+    });
+  });
+
   describe('extinguishArc', () => {
     it('sets isActive to false', () => {
       slice.arc.isActive = true;

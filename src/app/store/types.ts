@@ -46,6 +46,8 @@ export interface ArcState {
   voltage: number;
   amperage: number;
   stability: number;
+  /** Transient flag: set by commitFrame when spatterBurst === true, cleared by SpatterSystem */
+  lastSpatterBurst: boolean;
 }
 
 /**
@@ -140,4 +142,6 @@ export interface WelderStore {
   commitFrame: (frame: FrameResult) => void;
   endWeldSession: () => void;
   resetSession: () => void;
+  /** Clears the transient lastSpatterBurst flag after SpatterSystem consumes it */
+  clearSpatterBurst: () => void;
 }
